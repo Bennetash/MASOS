@@ -1,0 +1,54 @@
+name: CI/CD for MASOS
+
+on:
+  push:
+    branches:
+      - master  # Ejecuta cuando hay un push en la rama master
+  pull_request:
+    branches:
+      - master  # Ejecuta cuando se abre un pull request hacia la rama master
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest  # Usar Ubuntu como entorno de ejecución
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2  # Obtener el código del repositorio
+
+    - name: Set up Python
+      uses: actions/setup-python@v2  # Configurar Python
+      with:
+        python-version: '3.8'
+
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt  # Instalar las dependencias del proyecto
+
+    - name: Run reward-checker agent
+      run: |
+        claude /agent run reward-checker  # Ejecutar el subagente de auditoría de recompensas
+
+    - name: Run drone-physics-checker agent
+      run: |
+        claude /agent run drone-physics-checker  # Ejecutar el subagente para verificar la física de los drones
+
+    - name: Run simulator-adapter agent
+      run: |
+        claude /agent run simulator-adapter  # Ejecutar el subagente para conectar con simuladores
+
+    - name: Run training-monitor agent
+      run: |
+        claude /agent run training-monitor  # Ejecutar el subagente para monitorear el entrenamiento
+
+    - name: Run real-world-validation agent
+      run: |
+        claude /agent run real-world-validation  # Ejecutar el subagente para validar la transferencia de simulación a la realidad
+
+    - name: Run integration-checker agent
+      run: |
+        claude /agent run integration-checker  # Ejecutar el subagente para verificar la integración de componentes
+
+    - name: Run hardware-compatibility agent
+      run: |
+        claude /agent run hardware-compatibility  # Ejecutar el subagente para verificar la compatibilidad de hardware
