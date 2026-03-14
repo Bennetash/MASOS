@@ -14,32 +14,35 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: '3.8'
-
-    - name: InstallClaudeCode
-      run: |
-        curl -fsSL https://claude.ai/install.sh | bash
 
     - name: Install dependencies
       run: |
         pip install -r requirements.txt
 
-    - name: Analyze with Claude and subagents
-      run: |
-        claude <<EOF
-        Analiza el repositorio MASOS usando los subagentes que definimos:
-        reward-checker, drone-physics-checker, simulator-adapter,
-        training-monitor, real-world-validation, integration-checker y
-        hardware-compatibility.
+    - name: Run Claude Code analysis
+      uses: anthropics/claude-code-action@v1
+      with:
+        claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+        prompt: |
+          Analiza el repositorio MASOS y usa los siguientes subagentes:
+            - reward-checker
+            - drone-physics-checker
+            - simulator-adapter
+            - training-monitor
+            - real-world-validation
+            - integration-checker
+            - hardware-compatibility
 
-        Para cada subagente:
-        - Ejecuta su tarea especializada basándose en el código y la descripción.
-        - Resume los hallazgos en formato JSON con estas claves:
-           "agent", "issues", "recommendations", "severity"
-        Devuélveme ese JSON completo.
-        EOF
+          Para cada agente:
+          1. Revisa el código y encuentra problemas o mejoras.
+          2. Devuelve un JSON con estos campos:
+             - agent
+             - issues
+             - severity
+             - recommendations
