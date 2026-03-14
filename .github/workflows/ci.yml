@@ -4,37 +4,36 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
 
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+  id-token: write
+
 jobs:
   audit:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.8'
+      - name: Run Claude Code analysis
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          prompt: |
+            Analiza el repositorio MASOS usando estos subagentes:
+              - reward-checker
+              - drone-physics-checker
+              - simulator-adapter
+              - training-monitor
+              - real-world-validation
+              - integration-checker
+              - hardware-compatibility
 
-    - name: Install dependencies
-      run: |
-        pip install -r requirements.txt
-
-    - name: Run Claude Code analysis
-      uses: anthropics/claude-code-action@v1
-      with:
-        claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-        prompt: |
-          Analiza el repositorio MASOS usando estos subagentes:
-            - reward-checker
-            - drone-physics-checker
-            - simulator-adapter
-            - training-monitor
-            - real-world-validation
-            - integration-checker
-            - hardware-compatibility
-
-          Para cada agente:
-          - Revisa el código.
-          - Devuelve un JSON con: agent, issues, severity, recommendations.
+            Para cada agente:
+            - Revisa el código.
+            - Devuelve un JSON con: agent, issues, severity, recommendations.
