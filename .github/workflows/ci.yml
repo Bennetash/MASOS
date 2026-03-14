@@ -21,6 +21,10 @@ jobs:
       with:
         python-version: '3.8'
 
+    - name: Install Claude Code
+      run: |
+        curl -fsSL https://claude.ai/install.sh | bash  # Instala Claude Code
+
     - name: Install dependencies
       run: |
         pip install -r requirements.txt  # Instalar las dependencias del proyecto
