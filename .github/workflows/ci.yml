@@ -3,56 +3,43 @@ name: CI/CD for MASOS
 on:
   push:
     branches:
-      - master  # Ejecuta cuando hay un push en la rama master
+      - master
   pull_request:
     branches:
-      - master  # Ejecuta cuando se abre un pull request hacia la rama master
+      - master
 
 jobs:
   audit:
-    runs-on: ubuntu-latest  # Usar Ubuntu como entorno de ejecución
+    runs-on: ubuntu-latest
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2  # Obtener el código del repositorio
+      uses: actions/checkout@v2
 
     - name: Set up Python
-      uses: actions/setup-python@v2  # Configurar Python
+      uses: actions/setup-python@v2
       with:
         python-version: '3.8'
 
-    - name: Install Claude Code
+    - name: InstallClaudeCode
       run: |
-        curl -fsSL https://claude.ai/install.sh | bash  # Fuerza la instalación de Claude
+        curl -fsSL https://claude.ai/install.sh | bash
 
     - name: Install dependencies
       run: |
-        pip install -r requirements.txt  # Instalar las dependencias del proyecto
+        pip install -r requirements.txt
 
-    - name: Run reward-checker agent
+    - name: Analyze with Claude and subagents
       run: |
-        claude /agent run reward-checker  # Ejecutar el subagente de auditoría de recompensas
+        claude <<EOF
+        Analiza el repositorio MASOS usando los subagentes que definimos:
+        reward-checker, drone-physics-checker, simulator-adapter,
+        training-monitor, real-world-validation, integration-checker y
+        hardware-compatibility.
 
-    - name: Run drone-physics-checker agent
-      run: |
-        claude /agent run drone-physics-checker  # Ejecutar el subagente para verificar la física de los drones
-
-    - name: Run simulator-adapter agent
-      run: |
-        claude /agent run simulator-adapter  # Ejecutar el subagente para conectar con simuladores
-
-    - name: Run training-monitor agent
-      run: |
-        claude /agent run training-monitor  # Ejecutar el subagente para monitorear el entrenamiento
-
-    - name: Run real-world-validation agent
-      run: |
-        claude /agent run real-world-validation  # Ejecutar el subagente para validar la transferencia de simulación a la realidad
-
-    - name: Run integration-checker agent
-      run: |
-        claude /agent run integration-checker  # Ejecutar el subagente para verificar la integración de componentes
-
-    - name: Run hardware-compatibility agent
-      run: |
-        claude /agent run hardware-compatibility  # Ejecutar el subagente para verificar la compatibilidad de hardware
+        Para cada subagente:
+        - Ejecuta su tarea especializada basándose en el código y la descripción.
+        - Resume los hallazgos en formato JSON con estas claves:
+           "agent", "issues", "recommendations", "severity"
+        Devuélveme ese JSON completo.
+        EOF
