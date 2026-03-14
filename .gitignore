@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+results/
+*.egg-info/
+.eggs/
+dist/
+build/
+.env
+.venv/
+_write_files.py
+_gen_*.py

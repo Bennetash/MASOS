@@ -1,0 +1,1 @@
+# MASOS scripts package

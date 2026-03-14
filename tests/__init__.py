@@ -1,0 +1,1 @@
+# MASOS tests package
