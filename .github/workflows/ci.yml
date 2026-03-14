@@ -23,7 +23,7 @@ jobs:
 
     - name: Install Claude Code
       run: |
-        curl -fsSL https://claude.ai/install.sh | bash  # Instala Claude Code
+        curl -fsSL https://claude.ai/install.sh | bash  # Fuerza la instalación de Claude
 
     - name: Install dependencies
       run: |
