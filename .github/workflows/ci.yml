@@ -1,12 +1,8 @@
 name: CI/CD for MASOS
 
 on:
-  push:
-    branches:
-      - master
   pull_request:
-    branches:
-      - master
+    types: [opened, synchronize, reopened]
 
 jobs:
   audit:
@@ -30,7 +26,7 @@ jobs:
       with:
         claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
         prompt: |
-          Analiza el repositorio MASOS y usa los siguientes subagentes:
+          Analiza el repositorio MASOS usando estos subagentes:
             - reward-checker
             - drone-physics-checker
             - simulator-adapter
@@ -40,9 +36,5 @@ jobs:
             - hardware-compatibility
 
           Para cada agente:
-          1. Revisa el código y encuentra problemas o mejoras.
-          2. Devuelve un JSON con estos campos:
-             - agent
-             - issues
-             - severity
-             - recommendations
+          - Revisa el código.
+          - Devuelve un JSON con: agent, issues, severity, recommendations.
